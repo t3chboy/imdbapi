@@ -1,30 +1,15 @@
+const authMiddleService = require('../helpers/authorize');
 const movieController = require('../controllers/movieController')
-
+console.log( authMiddleService.createToken('kaushil') );
+console.log( authMiddleService.createToken('kaushil') );
 const movieControllerObj = new movieController();	
 
-const fastify = require('fastify');
-const fp = require("fastify-plugin")
- 
-module.exports = fp(async function(fastify, opts) {
-  fastify.register(require("fastify-jwt"), {
-    secret: "supersecret"
-  })
- 
-  fastify.decorate("authenticate", async function(request, reply) {
-    try {
-      await request.jwtVerify()
-    } catch (err) {
-      reply.send(err)
-    }
-  })
-});
 
 
 const routes = [
   {
     method: 'POST',
     url: '/movie/create/',
-    preHandler: [fastify.authenticate],
     handler: function(request, reply){
     	try{
     	movieControllerObj.create( request ).then(data => {
@@ -43,9 +28,8 @@ const routes = [
 	method: 'GET',
 	url: '/',
 	handler: function (request, reply) {
-		const token = jwtSign({ 	foo: 'bar'  })
-  		reply.send({ token })
-    	//reply.send({ hello: 'Welcome to imdb' })
+
+    		reply.send({ hello: 'Welcome to imdb' })
   	}
 }
 

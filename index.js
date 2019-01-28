@@ -8,31 +8,26 @@
 
 
 
-
 const routes = require('./src/routes/');
 
-const fastifyServer = require('fastify')({
+const fastify = require('fastify')({
 	logger : true
 });
 
-fastifyServer.register(require('fastify-jwt'), { 
-  secret: 'supersecret' 
-})
-const token = fastifyServer.sign({ sub: 123 } , 'ABCDGUYTJHKJDH5764546HKHUHUH')
-console.log( token );
+
 
 
 routes.forEach((route, index) => {
- fastifyServer.route(route)
+ fastify.route(route)
 })
 
 
 const startServer = async () => {
 	try{
-		await fastifyServer.listen( 3000 );
-		fastifyServer.log.info(`Server listening on ${fastifyServer.server.address().port}`)
+		await fastify.listen( 3000 );
+		fastify.log.info(`Server listening on ${fastify.server.address().port}`)
 	}catch( err ){
-		fastifyServer.log.error(err);
+		fastify.log.error(err);
 		process.exit(1);
 	}
 }

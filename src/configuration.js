@@ -10,10 +10,12 @@ let config =
     development: {
         port: env.PORT || 4000,
         databaseUrl: env.DATABASE_URL || "",
+        secret: 'worldisfullofdevelopers'
     },
     stage: {
         port: env.PORT || 5000,
         databaseUrl: '',
+        secret: 'worldisfullofdevelopers'
     },
     common: {
         tempfolder: os.tmpdir(),
