@@ -9,12 +9,16 @@
 
 
 const routes = require('./src/routes/');
+const authMiddleService = require('./src/helpers/authorize');
 
 const fastify = require('fastify')({
 	logger : true
 });
 
-
+fastify.addHook('preHandler', (request, reply, done) => {
+  authMiddleService.authorize( request , reply , done )
+  done();
+})
 
 
 routes.forEach((route, index) => {
