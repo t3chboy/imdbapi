@@ -28,10 +28,23 @@ class movieController {
 			.catch( err => {
 				return reject(err);
 			})
+		})
+	}
+
+	delete( requestParams ){
+		return new Promise((resolve,reject)=>{
+			this._movieModelObj.delete( requestParams.id )
+			.then( data =>{
+				return resolve(data);
+			},err => {
+				return reject(err);
+			})
+			.catch( err => {
+				return reject(err);
+			})
 
 
 		})
-
 	}
 }
 

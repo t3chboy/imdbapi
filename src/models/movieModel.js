@@ -21,7 +21,7 @@ class movieModel {
 			
 			const movieData = [ requestParams.name, requestParams.year, requestParams.rank, requestParams.director ];
 
-			const insertQuery = "INSERT INTO movies ( name, year, rank, director ) values ( ? , ? , ? , ?  ) ";
+			const insertQuery = "INSERT INTO movies ( name, year, rank, director_name ) values ( ? , ? , ? , ?  ) ";
 			
 			mysqlService.query( insertQuery , movieData , ( error , results, fields )=>{
 				
@@ -53,12 +53,12 @@ class movieModel {
 	 * @param  {[type]} requestParams [description]
 	 * @return {[type]}               [description]
 	 */
-	delete(hotelId) {
+	delete(movieId) {
 		let self = this;
 		return new Promise((resolve, reject) => {
-			self.exists(hotelId)
+			self.exists(movieId)
 				.then(()=>{
-					return self.deleteData(hotelId)
+					return self.deleteData(movieId)
 				})
 				.then(data => {
 					return resolve(data);
@@ -119,35 +119,50 @@ class movieModel {
 
 	}
 
-	deleteData(hotelId) {
+	deleteData( movieId ) {
 
 		return new Promise((resolve, reject) => {
-			let deleteRowId = hotelId;
-			let deleteQuery = "UPDATE hotel_master set status = '0' where id = ? ";
-			mysqlService.query(deleteQuery, deleteRowId, (error, results) => {
-			
-				if (error) {
-					return reject([error.code , error.errno, error.sqlMessage]);
-				};
-				if (results.affectedRows == 1) {
-					return resolve('Deleted successfully.');
-				}
-			});
+			let deleteRowId = movieId ;
+
+			this._movieGernesModelObj.deleteData( movieId )
+					.then(() => {
+
+						let deleteQuery = "delete from movies where id = ? ";
+						mysqlService.query(deleteQuery, deleteRowId, (error, results) => {
+						
+							if (error) {
+								return reject([error.code , error.errno, error.sqlMessage]);
+							};
+							if (results.affectedRows == 1) {
+								return resolve('Movie Deleted successfully.');
+							}
+						});
+					},err => {
+						return reject( err );
+			}).catch( err => {
+						return reject(err);
+			})
+
+
+
+
+
+
+
 
 		});
 
 	}
 
-	exists( hotelId ) {
+	exists( movieId ) {
 
 		return new Promise((resolve, reject) => {
-			let selectQuery = "select id from hotel_master where id= ? AND status = ? ";
-
-				mysqlService.query(selectQuery, [hotelId, '1'], (error, results, fields) => {
+			let selectQuery = "select id from movies where id= ?  ";
+				mysqlService.query(selectQuery, movieId , (error, results, fields) => {
 					if (error) {
 						return reject([error.code , error.errno, error.sqlMessage]);
 					} else if (results.length == 0) {
-						return reject("Hotel Not Found");
+						return reject("Movie Not Found");
 					} else {
 						return resolve(true);
 					}

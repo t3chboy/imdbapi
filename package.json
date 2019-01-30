@@ -9,6 +9,7 @@
   "author": "kaushil rambhia",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^6.2.0",
     "fastify": "^1.13.4",
     "fastify-jwt": "^0.9.1",
     "fastify-swagger": "^1.1.0",

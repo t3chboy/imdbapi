@@ -3,7 +3,7 @@ let jwt = require('jsonwebtoken');
 const config = require('../configuration.js');
 const appConstants = require('../appconstants.js');
 
-const authorize = function verify( request ){
+const authorize = async function verify( request ){
 	
 	userssoToken = request.headers.authorization;
 

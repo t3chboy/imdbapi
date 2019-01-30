@@ -15,6 +15,7 @@ class movieGernesModel{
 	create( bodyParams, movieId ){
 
 		return new Promise((resolve,reject)=>{
+
 			this.createGenres( movieId, bodyParams )
 			.then(data =>{
 				return resolve(data); 
@@ -31,14 +32,14 @@ class movieGernesModel{
 		return new Promise((resolve,reject)=>{
 
 			let genresData = [];
-			if( bodyParams.length >= 1 ){
+			if( bodyParams.genre.length >= 1 ){
 				
-				for( let eachParam of bodyParams ){
-					genresData.push([ parseInt(movieId), eachParam.genre ]);	
+				for( let eachParam of bodyParams.genre ){
+					genresData.push([ parseInt(movieId), eachParam ]);	
 				}
 			}
 
-			const insertQuery = "INSERT INTO room_master ( movie_id, genre ) values  ?  ";
+			const insertQuery = "INSERT INTO movies_genres ( movie_id, genre ) values  ?  ";
 			
 			mysqlService.query( insertQuery , [genresData]  , ( error , results, fields )=>{
 				
@@ -49,9 +50,28 @@ class movieGernesModel{
 				if (results.affectedRows > 0) {
 					return resolve('Created successfully.');
 				}
-				
-			})
+			});
+		});
+	}
 
+
+	deleteData( movieId ){
+
+		return new Promise(( resolve, reject ) => {
+
+			const deleteQuery = " delete from movies_genres where movie_id = ? ";
+
+			mysqlService.query( deleteQuery , movieId , ( error, results,  fields ) => {
+				console.log( results );
+				console.log( error );
+				if( error ){
+					return reject([error.code , error.errno, error.sqlMessage]);
+				};
+				//todo check if genre exists
+				if (results.affectedRows > 0) {
+					return resolve('Deleted successfully.');
+				}
+			});
 		});
 	}
 }
