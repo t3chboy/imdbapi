@@ -28,7 +28,6 @@ const routes = [
 	url: '/movie/create/',
 	beforeHandler : function( request, reply, done ) {
 		routeAuthorization( request, reply, done  );
-		done();
 	},
 	handler: function(request, reply){
 		try{
@@ -49,14 +48,14 @@ const routes = [
 	method : 'DELETE',
 	url: '/movie/:id',
 	beforeHandler : function( request, reply, done ) {
-		routeAuthorization( request, reply, done  );
-		done();
+		routeAuthorization( request, reply,done  );
 	},
 	handler: function(request, reply){
 		try{
 		movieControllerObj.delete( request.params ).then(data => {
 			reply.send({'data':data});
 		},err =>{ 
+			reply.code(404);
 			reply.send(err);
 			//logger.info(err);
 		});

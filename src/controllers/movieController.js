@@ -35,7 +35,7 @@ class movieController {
 		return new Promise((resolve,reject)=>{
 			this._movieModelObj.delete( requestParams.id )
 			.then( data =>{
-				return resolve(data);
+				return resolve("Movie deleted successfully");
 			},err => {
 				return reject(err);
 			})

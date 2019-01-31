@@ -63,10 +63,10 @@ class movieGernesModel{
 
 			mysqlService.query( deleteQuery , movieId , ( error, results,  fields ) => {
 				console.log( results );
-				console.log( error );
 				if( error ){
 					return reject([error.code , error.errno, error.sqlMessage]);
 				};
+				console.log(results);
 				//todo check if genre exists
 				if (results.affectedRows > 0) {
 					return resolve('Deleted successfully.');

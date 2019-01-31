@@ -55,18 +55,52 @@ class movieModel {
 	 */
 	delete(movieId) {
 		let self = this;
+		let movieDeleteStatus = 0;
+		let genreDeleteStatus = 0;
+		let isMovieExists = 0;
+		let isMovieGenreExists = 0;
 		return new Promise((resolve, reject) => {
+
 			self.exists(movieId)
 				.then(()=>{
+					isMovieExists = 1;
+					console.log("a",isMovieExists);
+					console.log("b",isMovieGenreExists);
 					return self.deleteData(movieId)
 				})
 				.then(data => {
-					return resolve(data);
+					movieDeleteStatus = data;
 				}, error => {
-					return reject(error);
-				})
-		});
-	}
+					isMovieExists = 0;
+					console.log("movie not exists");
+				}).then(() =>{
+					return self.genreExists(movieId);
+				}).then(() =>{
+					console.log("here");
+					isMovieGenreExists = 1;
+					return this._movieGernesModelObj.deleteData(movieId)
+				},err =>{
+					isMovieGenreExists = 0;
+				}).then((data) =>{
+					genreDeleteStatus = data;
+					return true;
+				}).then(() =>{
+
+					console.log("a",isMovieExists);
+					console.log("b",isMovieGenreExists);
+					if( isMovieExists == 0 && isMovieGenreExists == 0 ){
+						return reject("No Movie Data Found");
+					}
+
+					if( ( movieDeleteStatus && genreDeleteStatus) || ( isMovieExists == 0 && isMovieGenreExists == 1 && genreDeleteStatus  ) ){
+						return resolve(true);
+					}else{
+						return reject(false);
+					}
+				});
+
+			});	
+}		
 
 	/**
 	 * [update Update Hotel Data]
@@ -124,32 +158,16 @@ class movieModel {
 		return new Promise((resolve, reject) => {
 			let deleteRowId = movieId ;
 
-			this._movieGernesModelObj.deleteData( movieId )
-					.then(() => {
-
-						let deleteQuery = "delete from movies where id = ? ";
-						mysqlService.query(deleteQuery, deleteRowId, (error, results) => {
-						
-							if (error) {
-								return reject([error.code , error.errno, error.sqlMessage]);
-							};
-							if (results.affectedRows == 1) {
-								return resolve('Movie Deleted successfully.');
-							}
-						});
-					},err => {
-						return reject( err );
-			}).catch( err => {
-						return reject(err);
-			})
-
-
-
-
-
-
-
-
+			let deleteQuery = "delete from movies where id = ? ";
+			mysqlService.query(deleteQuery, deleteRowId, (error, results) => {
+			
+				if (error) {
+					return reject([error.code , error.errno, error.sqlMessage]);
+				};
+				if (results.affectedRows == 1) {
+					return resolve('Movie Deleted successfully.');
+				}
+			});
 		});
 
 	}
@@ -166,10 +184,25 @@ class movieModel {
 					} else {
 						return resolve(true);
 					}
-
 				});
 			});
-
 	}
+
+	genreExists( movieId ){
+
+		return new Promise( (resolve, reject) => {
+			let selectQuery = "select movie_id from movies_genres where movie_id = ?";
+			mysqlService.query( selectQuery, movieId, ( error, results, fields ) => {
+				if( error ){
+					return reject([error.code,error.errno,error.sqlMessage]);
+				}else if( results.length == 0 ){
+					return reject("Movie genre not found");
+				}else{
+					return resolve(true);
+				}
+			})
+		});
+	}
+
 }
 module.exports = movieModel;
