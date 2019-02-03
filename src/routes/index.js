@@ -2,6 +2,10 @@ const authMiddleService = require('../helpers/authorize');
 const movieController = require('../controllers/movieController');
 const appConstants = require('../appconstants');
 
+const searchController = require('../controllers/searchController');
+
+const searchControllerObj = new searchController();
+
 const movieControllerObj = new movieController();	
 
 function routeAuthorization( request, reply, done ){
@@ -25,7 +29,7 @@ function routeAuthorization( request, reply, done ){
 const routes = [
   {
 	method: 'POST',
-	url: '/movie/create/',
+	url: '/movie/',
 	beforeHandler : function( request, reply, done ) {
 		routeAuthorization( request, reply, done  );
 	},
@@ -88,8 +92,49 @@ const routes = [
 	}
 
 },
-	
-
+{
+	method: 'GET',
+	url: '/search',
+	handler : function( request, reply ){
+		try{
+		searchControllerObj.basicsearch( request.query ).then(data => {
+			reply.send({'data':data});
+		},err =>{ 
+			reply.code(404);
+			reply.send(err);
+		});
+	}catch( error ){
+		reply.send(error);
+	}
+	}
+},
+{
+	method: 'GET',
+	url: '/search/advance',
+	schema: {
+		querystring: {
+	      movie_name: { type: 'string' },
+	      release_year: { type: 'integer' }
+	    }
+	},    
+	handler : function( request, reply ){
+		try{
+		searchControllerObj.advancesearch( request.query ).then(data => {
+			if( data.length > 0 )
+				reply.send({'data':data});
+			else{
+				reply.code(404);
+				reply.send("Seems your too high, kindly re-check your filters!!!!");
+			}
+		},err =>{ 
+			reply.code(404);
+			reply.send(err);
+		});
+	}catch( error ){
+		reply.send(error);
+	}
+	}
+},
 {
 	method: 'GET',
 	url: '/',
